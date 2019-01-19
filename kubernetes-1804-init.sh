@@ -3,6 +3,13 @@
 # Ubuntu 18.04 LTS prep for Kubernetes on Azure
 # run as root
 
+# Test for root
+if ! [ $(id -u) = 0 ]
+    then
+        echo "Must be root to run this script"
+        exit 1
+fi
+
 # Workaround for local name resolution
 if [ $# -ge 1 ]
     then
@@ -11,6 +18,9 @@ fi
 
 # Update system
 apt-get update && apt-get upgrade -y
+
+# For add-apt-repository and curl
+apt-get install software-properties-common curl -y
 
 # Install and enable docker
 apt-get install docker.io -y
@@ -28,7 +38,7 @@ apt-get update && apt-get upgrade -y
 # Install kubeadm
 apt install kubeadm -y
 
-if [$# -eq 4]
+if [ $# -eq 4 ]
     then
         kubeadm join $2 \
                 --token $3 \
@@ -41,5 +51,3 @@ fi
 # cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 # sudo chown $(id -u):$(id -g) $HOME/.kube/config
 # kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-
-
